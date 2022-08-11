@@ -16,8 +16,7 @@ import UserIcon from "../public/UserIcon.png";
 export default class StartScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: "" };
-    this.state = { bgColor: "#5f9ea0" };
+    this.state = { name: "", bgColor: "#5f9ae0" };
   }
 
   // Update background color for chatscreen
@@ -60,18 +59,34 @@ export default class StartScreen extends React.Component {
             {/* Bg color options - User selects the color for chatscreen */}
             <View style={styles.colorArray}>
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel={"Select color for chatscreen background."}
+                accessibilityHint={"You can pick your own background color."}
+                accessibilityRole={"button"}
                 style={styles.colorButtonBlack}
                 onPress={() => this.changeBgColor(this.colors.black)}
               />
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel={"Select color for chatscreen background."}
+                accessibilityHint={"You can pick your own background color."}
+                accessibilityRole={"button"}
                 style={styles.colorButtonPurple}
                 onPress={() => this.changeBgColor(this.colors.purple)}
               />
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel={"Select color for chatscreen background."}
+                accessibilityHint={"You can pick your own background color."}
+                accessibilityRole={"button"}
                 style={styles.colorButtonGray}
                 onPress={() => this.changeBgColor(this.colors.gray)}
               />
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel={"Select color for chatscreen background."}
+                accessibilityHint={"You can pick your own background color."}
+                accessibilityRole={"button"}
                 style={styles.colorButtonGreen}
                 onPress={() => this.changeBgColor(this.colors.green)}
               />
