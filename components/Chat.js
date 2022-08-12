@@ -6,16 +6,6 @@ import { View, KeyboardAvoidingView, Platform } from "react-native";
 const firebase = require("firebase");
 require("firebase/firestore");
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBVwLBVlkHifrF-Nb3eFZpy9B0vfBQPbtQ",
-  authDomain: "test-8cc2f.firebaseapp.com",
-  projectId: "test-8cc2f",
-  storageBucket: "test-8cc2f.appspot.com",
-  messagingSenderId: "93752051851",
-  appId: "1:93752051851:web:b28b0a7a29dcddd3f92c8e",
-  measurementId: "G-6K43FKZQP6",
-};
-
 export default class ChatScreen extends React.Component {
   constructor() {
     super();
@@ -28,11 +18,22 @@ export default class ChatScreen extends React.Component {
         avatar: "",
       },
     };
+
+    // Initialize firestore
     if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
+      firebase.initializeApp({
+        apiKey: "AIzaSyBUxggHrxeGoxtUas4OkFBlbzWbX8bPIVw",
+        authDomain: "chat-app-b7de7.firebaseapp.com",
+        projectId: "chat-app-b7de7",
+        storageBucket: "chat-app-b7de7.appspot.com",
+        messagingSenderId: "501103748985",
+        appId: "1:501103748985:web:ce75c19b5b3eda879e31a8",
+        measurementId: "G-7R7ETGX90K",
+      });
     }
     // reference to messages collection
     this.referenceChatMessages = firebase.firestore().collection("messages");
+    this.referenceMessagesUser = null;
   }
 
   onCollectionUpdate = (querySnapshot) => {
@@ -66,23 +67,33 @@ export default class ChatScreen extends React.Component {
 
     // reference to messages collection
     this.referenceChatMessages = firebase.firestore().collection("messages");
-    // authentication listener
+
+    // authentication for user
     this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
         firebase.auth().signInAnonymously();
       }
-
-      // update user state
       this.setState({
         uid: user.uid,
-        messages: [],
-        loggedInText: "You are logged in",
+        messages: [
+          {
+            _id: user.uid,
+            text: `What's goin on ${name}`,
+            createdAt: new Date(),
+            user: {
+              _id: 2,
+              name: "react",
+              avatar: "https://placeimg.com/140/140/any",
+            },
+          },
+        ],
         user: {
-          _id: user._id,
+          _id: user.uid,
           name: name,
-          avatar: "https://placeholder.com/140/140/any",
+          avatar: "https://placeimg.com/140/140/any",
         },
       });
+
       // reference to active messages collection
       this.referenceMessagesUser = firebase
         .firestore()
@@ -117,8 +128,8 @@ export default class ChatScreen extends React.Component {
     );
   }
 
-  // adds messages to store
-  addMessage = (message) => {
+  addMessage() {
+    const message = this.state.messages[0];
     this.referenceChatMessages.add({
       uid: this.state.uid,
       _id: message._id,
@@ -126,8 +137,7 @@ export default class ChatScreen extends React.Component {
       text: message.text,
       user: message.user,
     });
-  };
-
+  }
   componentWillUnmount() {
     // unsubscribe() used to stop receiving updates from collection
     this.unsubscribe();
