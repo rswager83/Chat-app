@@ -1,6 +1,8 @@
 import React from "react";
-import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { View, KeyboardAvoidingView, Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from "@react-native-community/netinfo";
 
 // Firebase Database
 const firebase = require("firebase");
@@ -17,6 +19,7 @@ export default class ChatScreen extends React.Component {
         name: "",
         avatar: "",
       },
+      isConnected: false,
     };
 
     // Initialize firestore
@@ -65,6 +68,8 @@ export default class ChatScreen extends React.Component {
     let { name } = this.props.route.params;
     this.props.navigation.setOptions({ title: name });
 
+    this.getMessages();
+
     // reference to messages collection
     this.referenceChatMessages = firebase.firestore().collection("messages");
 
@@ -75,18 +80,7 @@ export default class ChatScreen extends React.Component {
       }
       this.setState({
         uid: user.uid,
-        messages: [
-          {
-            _id: user.uid,
-            text: `What's goin on ${name}`,
-            createdAt: new Date(),
-            user: {
-              _id: 2,
-              name: "react",
-              avatar: "https://placeimg.com/140/140/any",
-            },
-          },
-        ],
+        messages: [],
         user: {
           _id: user.uid,
           name: name,
@@ -104,6 +98,52 @@ export default class ChatScreen extends React.Component {
         .orderBy("createdAt", "desc")
         .onSnapshot(this.onCollectionUpdate);
     });
+
+    // Checks if user online or not
+    NetInfo.fetch().then((connection) => {
+      if (connection.isConnected) {
+        console.log("online");
+      } else {
+        console.log("offline");
+      }
+    });
+  }
+
+  // retrieve chat messages from asyncStorage
+  async getMessages() {
+    let messages = "";
+    try {
+      messages = (await AsyncStorage.getItem("messages")) || [];
+      this.setState({
+        messages: JSON.parse(messages),
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  // stores chat messages in asyncStorage
+  async saveMessages() {
+    try {
+      await AsyncStorage.setItem(
+        "messages",
+        JSON.stringify(this.state.messages)
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  // deletes chat messages in asyncStorage
+  async deleteMessages() {
+    try {
+      await AsyncStorage.removeItem("messages");
+      this.setState({
+        messages: [],
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 
   // Add messages to state
@@ -114,6 +154,7 @@ export default class ChatScreen extends React.Component {
       }),
       () => {
         this.addMessage();
+        this.saveMessages();
       }
     );
   }
@@ -126,6 +167,14 @@ export default class ChatScreen extends React.Component {
         wrapperStyle={{ right: { backgroundColor: "#000" } }}
       />
     );
+  }
+
+  // Hides chat input to prevent usage when offline
+  renderInputToolbar(props) {
+    if (this.state.isConnected == false) {
+    } else {
+      return <InputToolbar {...props} />;
+    }
   }
 
   addMessage() {
@@ -157,6 +206,7 @@ export default class ChatScreen extends React.Component {
       >
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
           messages={this.state.messages}
           onSend={(messages) => this.onSend(messages)}
           user={{
