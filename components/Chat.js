@@ -1,9 +1,12 @@
 import React from "react";
+
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { View, KeyboardAvoidingView, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 
+import CustomActions from "./actions/CustomActions";
+import MapView from "react-native-maps";
 // Firebase Database
 const firebase = require("firebase");
 require("firebase/firestore");
@@ -20,6 +23,8 @@ export default class ChatScreen extends React.Component {
         avatar: "",
       },
       isConnected: false,
+      image: null,
+      location: null,
     };
 
     // Initialize firestore
@@ -48,13 +53,15 @@ export default class ChatScreen extends React.Component {
       messages.push({
         _id: data._id,
         createdAt: data.createdAt.toDate(),
-        text: data.text,
+        text: data.text || "",
         uid: data.uid,
         user: {
           _id: data.user._id,
           name: data.user.name,
           avatar: data.user.avatar,
         },
+        location: data.location || null,
+        image: data.image || null,
       });
     });
     this.setState({
@@ -80,33 +87,64 @@ export default class ChatScreen extends React.Component {
       }
       this.setState({
         uid: user.uid,
-        messages: [],
-        user: {
-          _id: user.uid,
-          name: name,
-          avatar: "https://placeimg.com/140/140/any",
-        },
+        messages: [
+          // {
+          //   _id: 1,
+          //   text: "Hello developer",
+          //   createdAt: new Date(),
+          //   user: {
+          //     _id: 2,
+          //     name: "React Native",
+          //     avatar: "https://placeimg.com/140/140/any",
+          //   },
+          // },
+          // {
+          //   _id: 1,
+          //   createdAt: new Date(),
+          //   user: {
+          //     _id: 2,
+          //     name: "React Native",
+          //     avatar: "https://placeimg.com/140/140/any",
+          //   },
+          //   location: {
+          //     latitude: 48.864601,
+          //     longitude: 2.398704,
+          //   },
+          // },
+        ],
+        // user: {
+        //   _id: user.uid,
+        //   name: name,
+        //   avatar: "https://placeimg.com/140/140/any",
+        // },
       });
-
-      // reference to active messages collection
-      this.referenceMessagesUser = firebase
-        .firestore()
-        .collection("messages")
-        .where("uid", "==", this.state.uid);
-
       this.unsubscribe = this.referenceChatMessages
         .orderBy("createdAt", "desc")
         .onSnapshot(this.onCollectionUpdate);
     });
 
+    // reference to active messages collection
+    this.referenceMessagesUser = firebase
+      .firestore()
+      .collection("messages")
+      .where("uid", "==", this.state.uid);
+
     // Checks if user online or not
     NetInfo.fetch().then((connection) => {
       if (connection.isConnected) {
+        this.setState({ isConnected: true });
         console.log("online");
       } else {
+        this.setState({ isConnected: false });
         console.log("offline");
       }
     });
+  }
+
+  componentWillUnmount() {
+    // unsubscribe() used to stop receiving updates from collection
+    this.unsubscribe();
+    this.authUnsubscribe();
   }
 
   // retrieve chat messages from asyncStorage
@@ -159,38 +197,57 @@ export default class ChatScreen extends React.Component {
     );
   }
 
-  // Change properties of the bubble
-  renderBubble(props) {
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{ right: { backgroundColor: "#000" } }}
-      />
-    );
-  }
-
-  // Hides chat input to prevent usage when offline
-  renderInputToolbar(props) {
-    if (this.state.isConnected == false) {
-    } else {
-      return <InputToolbar {...props} />;
-    }
-  }
-
   addMessage() {
     const message = this.state.messages[0];
     this.referenceChatMessages.add({
       uid: this.state.uid,
       _id: message._id,
       createdAt: message.createdAt,
-      text: message.text,
+      text: message.text || "",
       user: message.user,
+      image: message.image || null,
+      location: message.location || null,
     });
   }
-  componentWillUnmount() {
-    // unsubscribe() used to stop receiving updates from collection
-    this.unsubscribe();
-    this.authUnsubscribe();
+
+  // Change properties of the bubble
+  renderBubble(props) {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{ right: { backgroundColor: "blue" } }}
+      />
+    );
+  }
+
+  // Hides chat input to prevent usage when offline
+  renderInputToolbar(props) {
+    if (this.state.isConnected === false) {
+    } else {
+      return <InputToolbar {...props} />;
+    }
+  }
+
+  renderCustomActions(props) {
+    return <CustomActions {...props} />;
+  }
+
+  renderCustomView(props) {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
   }
 
   render() {
@@ -202,16 +259,19 @@ export default class ChatScreen extends React.Component {
         style={{
           flex: 1,
           backgroundColor: bgColor,
+          paddingTop: Platform.OS === "android" ? 20 : 0,
         }}
       >
         <GiftedChat
-          renderBubble={this.renderBubble.bind(this)}
+          // renderBubble={this.renderBubble.bind(this)}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
+          renderActions={this.renderCustomActions.bind(this)}
+          renderCustomView={this.renderCustomView.bind(this)}
           messages={this.state.messages}
           onSend={(messages) => this.onSend(messages)}
           user={{
             _id: this.state.user._id,
-            name: name,
+            name: this.state.user.name,
             avatar: this.state.user.avatar,
           }}
         />
