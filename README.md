@@ -3,12 +3,20 @@
 
 ![Backgroundimage](public/BackgroundImage.png)
 
-A link to the app can be found [here](https://rswager83.github.io/Chat-app/).
-
 <br> 
 
 ## Description: 
-This app will provide users with a chat interface and the options to share their images and locations.
+This app will provide users with a chat interface along with the options to share their images and locations to others.
+
+<br>
+
+## Key Features:
+* A page where users can enter their name and choose a background color for the chat screen
+before joining the chat.
+* A page displaying the conversation, as well as an input field and submit button.
+* The chat must provide users with two additional communication features: sending images
+and location data.
+* Data gets stored online and offline.
 
 <br>
 
@@ -35,33 +43,32 @@ reader so that I can engage with a chat interface.
 
 <br>
 
-## Key Features:
-* A page where users can enter their name and choose a background color for the chat screen
-before joining the chat.
-* A page displaying the conversation, as well as an input field and submit button.
-* The chat must provide users with two additional communication features: sending images
-and location data.
-* Data gets stored online and offline.
-
-<br>
-
 ## App Installation & Necessary Steps:
 
-### Expo CLI 
-Expo provides tools that can help get you started and speeds up the app development. It has its own SDK(software development kit) which offers features that include access to the camera, retrieving geolocations and so on. And by using the Expo CLI, creating your React-Native App is as simple as:
+### [Expo CLI](https://expo.dev/tools) 
+Expo provides tools that can help get you started and speeds up the app development. It has its own SDK(software development kit) which offers features that include access to the camera, retrieving geolocations and so on. And when using the Expo CLI, creating your React-Native App is as simple as:
 ```
 npm install expo-cli --g
 expo-init yourProjectName
 cd yourProjectName
 expo start
 ```
-### Android Emulator Setup
-Using virtual devices to allow testing and preview of the app on a android operating system.
+### [Android Studio](https://developer.android.com/studio)
+Android Studio creates virtual devices to allow testing and preview of the app on a android operating system.
 
-* Download Android Studio <br>
-   * [For information to run the Android Emulator, please click here for full instuctions](https://developer.android.com/studio/run/emulator). 
+* Android Studio Emulator <br>
+   * For information to run the Android Emulator, [please click here for full instuctions](https://developer.android.com/studio/run/emulator). 
  
+### [Google Firebase](https://firebase.google.com/)
 
+Firebase is being used as a cloud-based storage platform for the app.
+
+1. Sign in to Google Firebase and select **Add Project**, then set up your project.
+2. Then select **Firebase Database** from the options on the left under **Build**.
+3. Select **Start in Test Mode**, choose your region, then create a collection.
+4. To set authentication, go to **Project Settings** and click **Register** to recieve the configuration code.
+5. This code is required for your app in order to use the firebase as your data storage.
+   * This code can be viewed in my chatscreen.js file.  
 
 <br>
 
