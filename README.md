@@ -31,6 +31,7 @@ reader so that I can engage with a chat interface.
 * Expo
 * Gifted Chat
 * Google Firebase
+* Android Studio - Emulator
 
 <br>
 
@@ -45,15 +46,22 @@ and location data.
 <br>
 
 ## App Installation & Necessary Steps:
-### Expo CLI 
-Expo provides tools that can help get you started and speeds up the app development. It has its own SDK(software development kit) which offers features that include access to the camera, retrieving geolocations and so on.
-```
-Steps 
-```
 
+### Expo CLI 
+Expo provides tools that can help get you started and speeds up the app development. It has its own SDK(software development kit) which offers features that include access to the camera, retrieving geolocations and so on. And by using the Expo CLI, creating your React-Native App is as simple as:
 ```
-Step 2
+npm install expo-cli --g
+expo-init yourProjectName
+cd yourProjectName
+expo start
 ```
+### Android Emulator Setup
+Using virtual devices to allow testing and preview of the app on a android operating system.
+
+* Download Android Studio <br>
+   * [For information to run the Android Emulator, please click here for full instuctions](https://developer.android.com/studio/run/emulator). 
+ 
+
 
 <br>
 
