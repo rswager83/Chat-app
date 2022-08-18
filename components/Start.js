@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  Platform,
 } from "react-native";
 
 import BackgroundImage from "../public/BackgroundImage.png";
@@ -116,6 +117,7 @@ export default class StartScreen extends React.Component {
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
+    paddingTop: Platform.OS === "android" ? 20 : 0,
   },
   imageBackground: {
     flex: 1,
