@@ -98,6 +98,7 @@ export default class StartScreen extends React.Component {
               <Button
                 title="Start Chatting"
                 color="#FFFFFF"
+                style={{ color: Platform.OS === "ios" ? "black" : "white" }}
                 backgroundColor="rgba(117, 112, 131, .8)"
                 onPress={() =>
                   this.props.navigation.navigate("ChatScreen", {
@@ -135,7 +136,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // -------------- //
   dataContainer: {
     flex: 50,
     flexDirection: "column",
@@ -216,6 +216,5 @@ const styles = StyleSheet.create({
     fontWeight: 300,
     backgroundColor: "rgba(117, 112, 131, .8)",
     borderRadius: 5,
-    color: "white",
   },
 });

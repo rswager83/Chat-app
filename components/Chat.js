@@ -58,7 +58,7 @@ export default class ChatScreen extends React.Component {
         user: {
           _id: data.user._id,
           name: data.user.name,
-          avatar: data.user.avatar,
+          avatar: data.user.avatar || "",
         },
         location: data.location || null,
         image: data.image || null,
@@ -115,7 +115,6 @@ export default class ChatScreen extends React.Component {
         // user: {
         //   _id: user.uid,
         //   name: name,
-        //   avatar: "https://placeimg.com/140/140/any",
         // },
       });
       this.unsubscribe = this.referenceChatMessages
@@ -215,7 +214,11 @@ export default class ChatScreen extends React.Component {
     return (
       <Bubble
         {...props}
-        wrapperStyle={{ right: { backgroundColor: "blue" } }}
+        wrapperStyle={{
+          right: {
+            backgroundColor: "blue",
+          },
+        }}
       />
     );
   }
